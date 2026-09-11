@@ -1,0 +1,739 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Owys</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #fbfcfb;
+    --surface: #ffffff;
+    --line: #ebefec;
+    --line-strong: #dfe5e1;
+    --text: #18201b;
+    --muted: #67736c;
+    --dim: #9aa69f;
+    /* Solana purple. #9945ff clears 4.5:1 on white, but only just — small text
+       and anything on a tinted chip uses the deeper --accent-ink. */
+    --accent: #9945ff;
+    --accent-ink: #7b2fe0;
+    --accent-soft: #f4ecff;
+    --accent-line: #e1d2fb;
+    --warn: #9a6314;
+    --warn-soft: #fbf3e6;
+    /* proxy was purple; it has to move now that purple is the brand */
+    --proxy: #2062ad;
+    --proxy-soft: #eaf2fb;
+    --radius: 22px;
+    --shadow: 0 1px 2px rgba(24, 32, 27, .04), 0 14px 34px -20px rgba(24, 32, 27, .18);
+    --shadow-sm: 0 1px 2px rgba(24, 32, 27, .05);
+    --sans: "Outfit", -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;
+    --mono: ui-monospace, SFMono-Regular, "SF Mono", Menlo, monospace;
+  }
+  * { box-sizing: border-box; }
+  html, body { height: 100%; }
+  body {
+    margin: 0;
+    color: var(--text);
+    font: 400 15px/1.55 var(--sans);
+    font-variant-numeric: tabular-nums;
+    -webkit-font-smoothing: antialiased;
+    background-color: var(--bg);
+    background-image:
+      linear-gradient(180deg, rgba(153, 69, 255, .075) 0%, rgba(153, 69, 255, 0) 460px),
+      url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='92' height='92'%3E%3Crect x='5' y='5' width='82' height='82' rx='28' fill='%239945ff' fill-opacity='0.024'/%3E%3C/svg%3E");
+    background-attachment: fixed, fixed;
+  }
+  a { color: inherit; text-decoration: none; }
+
+  button {
+    font: inherit; cursor: pointer; border: 0; background: none; color: inherit;
+    transition: background .14s, color .14s, border-color .14s, opacity .14s;
+  }
+  button:disabled { opacity: .45; cursor: default; }
+  .btn {
+    border-radius: 999px; padding: 9px 18px; font-weight: 500; font-size: 14px;
+    background: var(--surface); border: 1px solid var(--line-strong); color: var(--text);
+    box-shadow: var(--shadow-sm); white-space: nowrap;
+  }
+  .btn:hover:not(:disabled) { border-color: var(--accent-line); color: var(--accent-ink); }
+  .btn.primary { background: var(--text); border-color: var(--text); color: #fff; }
+  .btn.primary:hover:not(:disabled) { background: #000; border-color: #000; color: #fff; }
+  .btn.sm { padding: 6px 14px; font-size: 13px; }
+
+  /* ------------------------------------------------------------- header -- */
+  header {
+    position: sticky; top: 0; z-index: 20; padding: 18px 20px 10px;
+    display: flex; justify-content: center;
+  }
+  /* The nav is a floating pill, so page content would otherwise slide past it
+     on either side. Fade the strip behind it instead of boxing it in. */
+  header::before {
+    content: ""; position: absolute; inset: 0; z-index: -1;
+    background: linear-gradient(180deg, var(--bg) 58%, rgba(251, 252, 251, 0) 100%);
+  }
+  .bar {
+    width: 100%; max-width: 1020px; display: flex; align-items: center; gap: 14px;
+    background: rgba(255, 255, 255, .82); backdrop-filter: blur(14px);
+    border: 1px solid var(--line); border-radius: 999px;
+    padding: 9px 10px 9px 20px; box-shadow: var(--shadow);
+  }
+  .wordmark { display: flex; align-items: baseline; gap: 7px; font-weight: 500; letter-spacing: -.02em; }
+  .wordmark .dot { width: 9px; height: 9px; border-radius: 50%; background: var(--accent); }
+  .wordmark b { font-weight: 500; }
+  .wordmark .beta { font-size: 10px; color: var(--dim); font-weight: 400; }
+
+  nav { margin: 0 auto; display: flex; gap: 2px; background: #f2f5f3; border-radius: 999px; padding: 3px; }
+  nav button {
+    border-radius: 999px; padding: 7px 18px; font-size: 14px; font-weight: 400; color: var(--muted);
+  }
+  nav button:hover { color: var(--text); }
+  nav button[aria-selected="true"] { background: var(--text); color: #fff; font-weight: 500; }
+
+  .who { display: flex; align-items: center; gap: 8px; }
+  select {
+    font: inherit; font-size: 13.5px; color: var(--text); background: transparent;
+    border: 1px solid var(--line-strong); border-radius: 999px; padding: 7px 12px;
+    max-width: 190px; cursor: pointer;
+  }
+  .ghost { font-size: 13px; color: var(--dim); padding: 7px 12px; border-radius: 999px; }
+  .ghost:hover { color: var(--text); background: #f2f5f3; }
+  .ghost[aria-selected="true"] { color: var(--text); background: #f2f5f3; }
+
+  /* --------------------------------------------------------------- page -- */
+  main { max-width: 1020px; margin: 0 auto; padding: 26px 20px 90px; }
+  section[hidden] { display: none; }
+  .lede { font-weight: 300; font-size: 30px; line-height: 1.25; letter-spacing: -.025em; color: var(--text); margin: 0 0 4px; }
+  .sub { color: var(--muted); font-size: 14.5px; margin: 0 0 26px; }
+
+  .card-surface {
+    background: var(--surface); border: 1px solid var(--line);
+    border-radius: var(--radius); box-shadow: var(--shadow);
+  }
+  .pad { padding: 22px 24px; }
+  h3.blk {
+    margin: 0 0 14px; font-size: 12px; font-weight: 500; letter-spacing: .06em;
+    text-transform: uppercase; color: var(--dim);
+  }
+
+  /* ------------------------------------------------------- card (U-card) -- */
+  /* One centred column: headline, then the card, then the three figures
+     stacked beneath it — the shape a banking app actually uses. */
+  .hero { text-align: center; max-width: 620px; margin: 0 auto 30px; }
+  .hero .lede { margin-bottom: 8px; }
+  .hero .sub { margin: 0; }
+  .card-col { max-width: 430px; margin: 0 auto; display: flex; flex-direction: column; gap: 20px; }
+  .card-actions { display: flex; justify-content: center; gap: 8px; }
+
+  .vcard {
+    position: relative; overflow: hidden; aspect-ratio: 1.585; width: 100%; max-width: 100%;
+    border-radius: 26px; padding: 24px; display: flex; flex-direction: column;
+    /* Solana's own gradient runs purple -> green; a whisper of the green keeps
+       the card on-brand without making the theme green again. */
+    background:
+      radial-gradient(120% 90% at 88% 108%, rgba(20, 241, 149, .30) 0%, rgba(20, 241, 149, 0) 55%),
+      linear-gradient(142deg, #2b0d60 0%, #5b21b6 44%, #9945ff 100%);
+    border: 1px solid #4c1d95;
+    box-shadow: 0 2px 4px rgba(24,32,27,.06), 0 26px 52px -26px rgba(112, 40, 214, .62);
+    color: #fff;
+  }
+  .vcard::after {
+    content: ""; position: absolute; inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='58' height='58'%3E%3Crect x='3' y='3' width='52' height='52' rx='19' fill='%23ffffff' fill-opacity='0.04'/%3E%3C/svg%3E");
+    pointer-events: none;
+  }
+  .vcard > * { position: relative; z-index: 1; }
+  .vcard .top { display: flex; justify-content: space-between; align-items: flex-start; }
+  .vcard .nm { font-weight: 500; letter-spacing: -.01em; }
+  .vcard .rate {
+    font-size: 12px; font-weight: 500; color: var(--accent-ink);
+    background: rgba(255,255,255,.92); border-radius: 999px; padding: 4px 11px;
+  }
+  .vcard .bal { margin-top: 15px; }
+  .vcard .bal-k { font-size: 11.5px; color: rgba(255, 255, 255, .68); letter-spacing: .01em; }
+  .vcard .bal-v { font-size: 31px; font-weight: 300; letter-spacing: -.035em; line-height: 1.2; margin-top: 1px; }
+  .vcard .pan { margin-top: auto; font: 400 18px/1 var(--mono); letter-spacing: .1em; color: rgba(255,255,255,.9); }
+  .vcard .foot { display: flex; justify-content: space-between; margin-top: 13px; font-size: 12px; color: rgba(255,255,255,.62); }
+
+  .figures {
+    display: flex; flex-direction: column;
+    background: var(--surface); border: 1px solid var(--line);
+    border-radius: var(--radius); box-shadow: var(--shadow); padding: 4px 24px;
+  }
+  /* Label left, number right — a statement row, not a centred stat card. */
+  .fig {
+    display: flex; align-items: center; justify-content: space-between; gap: 18px;
+    padding: 17px 0; border-bottom: 1px solid var(--line);
+  }
+  .fig:last-child { border-bottom: 0; }
+  .fig .k { font-size: 13.5px; color: var(--text); }
+  .fig .v { font-size: 24px; font-weight: 300; letter-spacing: -.03em; line-height: 1.2; text-align: right; white-space: nowrap; }
+  .fig .v.g { color: var(--accent-ink); }
+  .fig .v.w { color: var(--warn); }
+  .fig .note { font-size: 12.5px; color: var(--dim); margin-top: 2px; }
+
+  .shops { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0 30px; }
+  @media (max-width: 780px) { .shops { grid-template-columns: 1fr; } }
+  .shop {
+    display: flex; align-items: center; gap: 12px; width: 100%; text-align: left;
+    padding: 13px 2px; border-bottom: 1px solid var(--line);
+  }
+  .shop:hover:not(:disabled) .shop-n { color: var(--accent-ink); }
+  .shop-n { font-size: 14px; letter-spacing: -.005em; }
+  .shop-w { font-size: 12.5px; color: var(--dim); margin-top: 1px; line-height: 1.4; }
+  .shop .go { margin-left: auto; color: var(--dim); flex: none; }
+  .shop:hover:not(:disabled) .go { color: var(--accent-ink); }
+  .more { margin-top: 16px; text-align: center; }
+
+  /* ---------------------------------------------------------- portfolio -- */
+  .total { font-weight: 300; font-size: 52px; letter-spacing: -.04em; line-height: 1.05; }
+  .total-sub { color: var(--muted); font-size: 14px; margin-top: 6px; }
+  .pf-head { display: flex; align-items: flex-end; gap: 34px; flex-wrap: wrap; margin-bottom: 26px; }
+  .ring { display: flex; align-items: center; gap: 22px; }
+  .legend { display: flex; flex-direction: column; gap: 5px; font-size: 13px; min-width: 190px; }
+  .legend > div { display: flex; align-items: center; gap: 8px; }
+  .swatch { width: 9px; height: 9px; border-radius: 3px; flex: none; }
+  .legend .pc { margin-left: auto; color: var(--muted); }
+
+  .rows { display: flex; flex-direction: column; }
+  .row {
+    display: flex; align-items: center; gap: 16px; padding: 16px 24px;
+    border-bottom: 1px solid var(--line);
+  }
+  .row:last-child { border-bottom: 0; }
+  .tkr { font-weight: 500; letter-spacing: -.01em; }
+  .co { font-size: 12.5px; color: var(--dim); margin-top: 1px; }
+  .num { font-family: var(--mono); font-size: 13px; color: var(--muted); }
+  .val { font-size: 16px; font-weight: 400; text-align: right; min-width: 82px; }
+  .pend { font-size: 12px; color: var(--warn); }
+  .grow { flex: 1; min-width: 0; }
+
+  /* ----------------------------------------------------------- activity -- */
+  .daygroup + .daygroup { margin-top: 22px; }
+  .day { font-size: 12px; color: var(--dim); padding: 0 4px 8px; letter-spacing: .02em; }
+  .tx { border-bottom: 1px solid var(--line); }
+  .tx:last-child { border-bottom: 0; }
+  .tx-main {
+    display: flex; align-items: center; gap: 14px; width: 100%; text-align: left;
+    padding: 15px 24px;
+  }
+  .tx-main:hover { background: #fafbfa; }
+  .merch { font-size: 14.5px; letter-spacing: -.005em; }
+  .earned { font-size: 12.5px; color: var(--muted); margin-top: 2px; display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+  .chip {
+    font-size: 11.5px; font-weight: 500; padding: 2px 8px; border-radius: 999px;
+    background: var(--accent-soft); color: var(--accent-ink); border: 1px solid var(--accent-line);
+  }
+  .chip.fb { background: var(--warn-soft); color: var(--warn); border-color: #f0e1c6; }
+  .chip.px { background: var(--proxy-soft); color: var(--proxy); border-color: #d2e2f4; }
+  .chip.dc { background: #fdeeee; color: #a33a3a; border-color: #f3d6d6; }
+  .tx.declined .merch, .tx.declined .amt .a { color: var(--dim); text-decoration: line-through; }
+  .amt { margin-left: auto; text-align: right; flex: none; }
+  .amt .a { font-size: 15px; }
+  .amt .r { font-size: 12.5px; color: var(--accent-ink); margin-top: 2px; }
+  .caret { color: var(--dim); flex: none; transition: transform .16s; }
+  .tx[data-open="1"] .caret { transform: rotate(90deg); color: var(--accent-ink); }
+  .why { padding: 2px 24px 20px 52px; }
+  .why-t { font-size: 13px; color: var(--muted); margin-bottom: 9px; }
+  .trace {
+    font: 12px/1.75 var(--mono); color: var(--muted); white-space: pre-wrap;
+    background: #f8faf9; border: 1px solid var(--line); border-radius: 14px; padding: 12px 14px;
+  }
+  .why-links { margin-top: 10px; font-size: 12.5px; display: flex; gap: 14px; flex-wrap: wrap; }
+  .why-links a { color: var(--accent-ink); }
+  .why-links a:hover { text-decoration: underline; }
+  .flag { margin-top: 9px; font-size: 12.5px; color: var(--warn); }
+
+  /* ----------------------------------------------------------- protocol -- */
+  .kv { display: grid; grid-template-columns: 190px minmax(0,1fr); gap: 10px 18px; font-size: 13.5px; }
+  .kv dt { color: var(--muted); }
+  .kv dd { margin: 0; font-family: var(--mono); font-size: 12.5px; word-break: break-all; }
+  .kv dd a { color: var(--accent-ink); }
+  .bars { display: flex; flex-direction: column; gap: 9px; }
+  .bar-row { display: flex; align-items: center; gap: 12px; font-size: 13px; }
+  .bar-row .lb { width: 132px; color: var(--muted); flex: none; }
+  .bar-row .tr { display: block; flex: 1; height: 7px; border-radius: 999px; background: #f0f3f1; overflow: hidden; }
+  /* inline spans ignore percentage heights — blockify the fill or it never paints */
+  .bar-row .fl { display: block; height: 100%; min-width: 3px; border-radius: 999px; background: var(--accent); }
+  .bar-row .vl { width: 96px; text-align: right; color: var(--dim); font-family: var(--mono); font-size: 12px; flex: none; }
+
+  .empty { padding: 40px 24px; text-align: center; color: var(--dim); font-size: 14px; }
+  .stack { display: flex; flex-direction: column; gap: 16px; }
+  .toast {
+    position: fixed; left: 50%; bottom: 26px; transform: translateX(-50%);
+    background: var(--text); color: #fff; font-size: 13.5px; padding: 11px 20px;
+    border-radius: 999px; box-shadow: var(--shadow); z-index: 50; opacity: 0;
+    pointer-events: none; transition: opacity .2s, transform .2s;
+  }
+  .toast.on { opacity: 1; transform: translateX(-50%) translateY(-4px); }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="bar">
+    <div class="wordmark"><span class="dot"></span><b>Owys</b><span class="beta">beta</span></div>
+    <nav role="tablist">
+      <button role="tab" data-tab="card" aria-selected="true">Card</button>
+      <button role="tab" data-tab="portfolio" aria-selected="false">Portfolio</button>
+      <button role="tab" data-tab="activity" aria-selected="false">Activity</button>
+      <button role="tab" data-tab="simulate" aria-selected="false">Simulate</button>
+    </nav>
+    <div class="who">
+      <select id="userSel" title="Cardholder"></select>
+      <button class="ghost" role="tab" data-tab="protocol" aria-selected="false">Protocol</button>
+    </div>
+  </div>
+</header>
+
+<main>
+  <!-- ============================================================ CARD == -->
+  <section id="tab-card">
+    <div class="hero">
+      <h1 class="lede">Spend at a company,<br>own a piece of it.</h1>
+      <p class="sub" id="cardSub">Every purchase returns 3% as stock in the company you bought from.</p>
+    </div>
+
+    <div class="card-col">
+      <div class="vcard">
+        <div class="top">
+          <div class="nm">Owys</div>
+          <div class="rate" id="rate">3.00% in equity</div>
+        </div>
+        <div class="bal">
+          <div class="bal-k">Available to spend</div>
+          <div class="bal-v" id="avail">$0.00</div>
+        </div>
+        <div class="pan" id="pan">4242 •••• •••• ····</div>
+        <div class="foot">
+          <span id="holder">no cardholder</span>
+          <span>VISA · devnet</span>
+        </div>
+      </div>
+
+      <div class="figures" id="figs"></div>
+
+      <div class="card-actions">
+        <button class="btn sm" id="topUp">Top up $1,000</button>
+        <button class="btn sm" id="newUser">New cardholder</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ======================================================== SIMULATE == -->
+  <section id="tab-simulate" hidden>
+    <h3 class="blk">Simulate a purchase</h3>
+    <p class="sub" style="margin:-6px 0 20px">
+      Stand-in for the card network. Each tap emits a Stripe-Issuing-shaped
+      authorization into the same webhook a real issuer would call.
+    </p>
+    <div class="card-surface pad">
+      <div style="display:flex;gap:9px;margin-bottom:14px;flex-wrap:wrap">
+        <button class="btn primary" id="runDemo">Run the 8-tap demo</button>
+        <button class="btn" id="rand5">5 random</button>
+      </div>
+      <div class="shops" id="shops"></div>
+      <div class="more"><button class="btn sm" id="showAll">Show all merchants</button></div>
+    </div>
+  </section>
+
+  <!-- ======================================================= PORTFOLIO == -->
+  <section id="tab-portfolio" hidden>
+    <div class="pf-head">
+      <div>
+        <h3 class="blk" style="margin-bottom:6px">Portfolio value</h3>
+        <div class="total" id="pfTotal">$0.00</div>
+        <div class="total-sub" id="pfSub"></div>
+      </div>
+      <div class="ring" id="pfRing"></div>
+    </div>
+    <div class="card-surface">
+      <div class="rows" id="pfRows"></div>
+    </div>
+  </section>
+
+  <!-- ======================================================== ACTIVITY == -->
+  <section id="tab-activity" hidden>
+    <h3 class="blk">Activity</h3>
+    <div id="acts"></div>
+  </section>
+
+  <!-- ======================================================== PROTOCOL == -->
+  <section id="tab-protocol" hidden>
+    <div class="stack">
+      <div class="card-surface pad">
+        <h3 class="blk">Deployment</h3>
+        <dl class="kv" id="proto"></dl>
+      </div>
+      <div class="card-surface pad">
+        <h3 class="blk">How spend resolved — by dollar</h3>
+        <div class="bars" id="mix"></div>
+        <p class="sub" id="mixNote" style="margin:16px 0 0"></p>
+      </div>
+      <div class="card-surface pad">
+        <h3 class="blk">Settlement batches</h3>
+        <div style="margin-bottom:14px"><button class="btn" id="runKeeper">Settle pending now</button></div>
+        <div id="settles"></div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<div class="toast" id="toast"></div>
+
+<script>
+const PALETTE = ["#9945ff","#2062ad","#14b8a6","#c98b1e","#cf5b8a","#6d28d9","#0ea5e9","#d0913a","#a855f7","#3aa89a"];
+const $ = (id) => document.getElementById(id);
+const usd = (n) => "$" + (n ?? 0).toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+const CHEVRON = `<svg class="caret" width="11" height="11" viewBox="0 0 11 11" aria-hidden="true"><path d="M4 2.2 L7.4 5.5 L4 8.8" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
+const esc = (s) => String(s ?? "").replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+
+const ISSUER_LABEL = { xStocks: "xStocks", Sunrise: "Sunrise", Ondo: "Ondo Global Markets" };
+const STAGE = {
+  network_id_cache: "known merchant", brand_exact: "brand match", brand_fuzzy: "brand match",
+  proxy: "proxy exposure", sector_etf: "closest basket", index_fallback: "whole market",
+};
+const chipClass = (s) => s === "proxy" ? "px" : (s === "sector_etf" || s === "index_fallback") ? "fb" : "";
+
+let state = null, portfolio = null, currentUser = null, tab = "card", busy = false;
+
+async function api(path, opts) {
+  const res = await fetch(path, { ...opts, headers: opts?.body ? { "Content-Type": "application/json" } : undefined });
+  if (!res.ok) throw new Error((await res.json().catch(() => ({}))).error || res.statusText);
+  return res.json();
+}
+
+let toastTimer;
+function toast(msg) {
+  const t = $("toast");
+  t.textContent = msg; t.classList.add("on");
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => t.classList.remove("on"), 2600);
+}
+
+/** Serialize actions, but never disable navigation — tabs must stay usable. */
+async function guard(fn) {
+  if (busy) return;
+  busy = true;
+  const locked = document.querySelectorAll("button:not([role=tab])");
+  locked.forEach((b) => (b.disabled = true));
+  try { await fn(); } catch (e) { toast(e.message); }
+  locked.forEach((b) => (b.disabled = false));
+  busy = false;
+}
+
+function setTab(next) {
+  tab = next;
+  for (const b of document.querySelectorAll("[role=tab]")) {
+    b.setAttribute("aria-selected", String(b.dataset.tab === next));
+  }
+  for (const id of ["card", "portfolio", "activity", "simulate", "protocol"]) {
+    $(`tab-${id}`).hidden = id !== next;
+  }
+  window.scrollTo({ top: 0 }); // instant: a smooth scroll gets interrupted by the re-render
+}
+
+// ------------------------------------------------------------------ card --
+
+function renderCard() {
+  const u = state.users.find((x) => x.id === currentUser);
+  $("avail").textContent = usd(u?.availableUsd);
+  $("pan").textContent = u ? `4242 •••• •••• ${u.cardLast4}` : "4242 •••• •••• ····";
+  $("holder").textContent = u ? u.label.toUpperCase() : "no cardholder";
+  $("rate").textContent = `${(state.rewardBps / 100).toFixed(2)}% in equity`;
+  $("cardSub").textContent =
+    `Every purchase returns ${(state.rewardBps / 100).toFixed(2)}% as stock in the company you bought from.`;
+
+  const oc = portfolio?.onChain;
+  const fig = (label, note, value, cls = "") =>
+    `<div class="fig">
+      <div><div class="k">${label}</div><div class="note">${note}</div></div>
+      <div class="v ${cls}">${value}</div>
+    </div>`;
+
+  $("figs").innerHTML =
+    fig("Total spent", `${oc?.txCount ?? 0} purchases`, usd(oc?.totalSpentUsd)) +
+    fig("Equity earned", `across ${portfolio?.holdings.length ?? 0} companies`,
+        usd(oc?.totalRewardedUsd), "g") +
+    fig("Awaiting conversion",
+        (portfolio?.pendingUsd ?? 0) > 0 ? "buys at the next batch" : "all settled",
+        usd(portfolio?.pendingUsd), "w");
+}
+
+// ------------------------------------------------------------- portfolio --
+
+function renderPortfolio() {
+  if (!portfolio) return;
+  $("pfTotal").textContent = usd(portfolio.portfolioValueUsd);
+  $("pfSub").textContent = portfolio.pendingUsd > 0
+    ? `${usd(portfolio.pendingUsd)} still waiting to be converted into stock`
+    : `Earned entirely from ${portfolio.onChain?.txCount ?? 0} card purchases`;
+
+  const held = portfolio.holdings.filter((h) => h.valueUsd > 0);
+  const total = held.reduce((s, h) => s + h.valueUsd, 0);
+  if (held.length && total > 0) {
+    const R = 46, C = 2 * Math.PI * R;
+    let acc = 0;
+    const segs = held.map((h, i) => {
+      const f = h.valueUsd / total;
+      const el = `<circle r="${R}" cx="56" cy="56" fill="none" stroke="${PALETTE[i % PALETTE.length]}"
+        stroke-width="13" stroke-linecap="butt" stroke-dasharray="${Math.max(f * C - 1.5, 0.6)} ${C}"
+        stroke-dashoffset="${-acc * C}" transform="rotate(-90 56 56)"></circle>`;
+      acc += f; return el;
+    }).join("");
+    $("pfRing").innerHTML = `
+      <svg width="112" height="112" viewBox="0 0 112 112" style="flex:none">${segs}</svg>
+      <div class="legend">${held.slice(0, 7).map((h, i) =>
+        `<div><span class="swatch" style="background:${PALETTE[i % PALETTE.length]}"></span>
+          <span>${esc(h.ticker)}</span><span class="pc">${((h.valueUsd / total) * 100).toFixed(1)}%</span></div>`).join("")}
+      </div>`;
+  } else {
+    $("pfRing").innerHTML = "";
+  }
+
+  $("pfRows").innerHTML = portfolio.holdings.length ? portfolio.holdings.map((h) => `
+    <div class="row">
+      <div class="grow"><div class="tkr">${esc(h.symbol)}</div>
+        <div class="co">${esc(h.name)}${h.issuer ? ` · ${esc(h.issuer)}` : ""}</div></div>
+      <div class="num">${h.shares.toFixed(6)} sh</div>
+      <div class="val">${usd(h.valueUsd)}${h.accruedUsd > 0 ? `<div class="pend">+${usd(h.accruedUsd)} pending</div>` : ""}</div>
+      <div style="flex:none;min-width:74px;text-align:right">${h.unclaimedShares > 0
+        ? `<button class="btn sm" data-claim="${esc(h.ticker)}">Claim</button>`
+        : `<a href="${esc(h.explorer)}" target="_blank" style="font-size:12.5px;color:var(--dim)">on-chain ↗</a>`}</div>
+    </div>`).join("")
+    : `<div class="empty">No holdings yet. Make a purchase on the Card tab.</div>`;
+
+  $("pfRows").querySelectorAll("[data-claim]").forEach((b) =>
+    b.addEventListener("click", () => claim(b.dataset.claim)));
+}
+
+// -------------------------------------------------------------- activity --
+
+function txRow(a) {
+  const r = a.resolution;
+  const notTokenized = r.company && r.ticker && !r.tickerTokenized;
+  const declined = a.status === "declined";
+  return `<div class="tx${declined ? " declined" : ""}" data-id="${esc(a.id)}" data-open="0">
+    <button class="tx-main">
+      ${CHEVRON}
+      <span class="grow">
+        <div class="merch">${esc(a.merchantName)}</div>
+        <div class="earned">${declined
+          ? `<span class="chip dc">Declined</span><span>insufficient balance — top up to spend</span>`
+          : `<span class="chip ${chipClass(r.stage)}">${esc(r.payoutSymbol || r.payoutTicker)}</span>
+             <span>${esc(r.payoutName || "")}${r.payoutIssuer ? ` · ${esc(ISSUER_LABEL[r.payoutIssuer] || r.payoutIssuer)}` : ""}</span>`}</div>
+      </span>
+      <span class="amt"><div class="a">${usd(a.amountUsd)}</div>${declined
+        ? `<div class="r" style="color:var(--dim)">no reward</div>`
+        : `<div class="r">+${usd(a.rewardUsd)}</div>`}</span>
+    </button>
+    <div class="why" hidden>
+      <div class="why-t">${declined
+        ? "Declined before anything was booked. The resolution below is shown for reference only."
+        : `Why ${esc(r.payoutTicker)}? — ${STAGE[r.stage]}, confidence ${r.confidence.toFixed(2)}`}</div>
+      <div class="trace">${r.trace.map(esc).join("\n")}</div>
+      ${notTokenized ? `<div class="flag">Identified ${esc(r.company)} (${esc(r.ticker)}), but this issuer has not tokenized it — fell to a broader holding.</div>` : ""}
+      ${r.proxy ? `<div class="flag">Proxy exposure: this is the closest listed company, not the brand itself.</div>` : ""}
+      <div class="why-links">
+        ${declined
+          ? `<span style="color:var(--dim)">No on-chain record — a declined authorization never reaches the program.</span>`
+          : a.accrueSig
+            ? `<a href="https://explorer.solana.com/tx/${esc(a.accrueSig)}?cluster=devnet" target="_blank">Reward recorded on-chain ↗</a>`
+            : `<span style="color:var(--dim)">recording on-chain…</span>`}
+        <span style="color:var(--dim)">MCC ${a.mcc} · merchant ${esc(a.networkId)}</span>
+      </div>
+    </div>
+  </div>`;
+}
+
+function renderActivity() {
+  const auths = portfolio?.authorizations ?? [];
+  if (!auths.length) { $("acts").innerHTML = `<div class="card-surface"><div class="empty">No purchases yet.</div></div>`; return; }
+
+  const groups = new Map();
+  for (const a of auths) {
+    const key = new Date(a.ts).toLocaleDateString("en-US", { weekday: "short", month: "short", day: "numeric" });
+    if (!groups.has(key)) groups.set(key, []);
+    groups.get(key).push(a);
+  }
+  $("acts").innerHTML = [...groups].map(([day, rows]) =>
+    `<div class="daygroup"><div class="day">${esc(day)}</div>
+      <div class="card-surface">${rows.map(txRow).join("")}</div></div>`).join("");
+
+  $("acts").querySelectorAll(".tx-main").forEach((b) => b.addEventListener("click", () => {
+    const tx = b.closest(".tx");
+    const open = tx.dataset.open === "1";
+    tx.dataset.open = open ? "0" : "1";
+    tx.querySelector(".why").hidden = open;
+  }));
+}
+
+// -------------------------------------------------------------- protocol --
+
+function renderProtocol() {
+  const oc = state.onChain;
+  $("proto").innerHTML = `
+    <dt>Cluster</dt><dd>${esc(state.cluster)}</dd>
+    <dt>Program</dt><dd><a href="${esc(state.programExplorer)}" target="_blank">${esc(state.programId)} ↗</a></dd>
+    <dt>Config PDA</dt><dd>${esc(state.configAccount)}</dd>
+    <dt>Treasury</dt><dd>${esc(state.treasury)}</dd>
+    <dt>Cashback rate</dt><dd>${state.rewardBps} bps</dd>
+    <dt>Accruals on-chain</dt><dd>${oc?.accrualCount ?? 0}</dd>
+    <dt>Spend / accrued / settled</dt><dd>${usd(oc?.totalSpentUsd)} · ${usd(oc?.totalAccruedUsd)} · ${usd(oc?.totalSettledUsd)}</dd>
+    <dt>Merchants cached</dt><dd>${state.cache.merchants} (${state.cache.hits} hits)</dd>
+    <dt>Batch threshold</dt><dd>${usd(state.minBatchUsd)}</dd>
+    <dt>Issuers</dt><dd>${(state.issuers ?? []).map((i) =>
+      `${esc(i.label)} — ${i.tickers} tickers<div style="color:var(--dim)">${esc(i.note)}</div>`).join("<br>")}</dd>`;
+
+  const by = state.stats.byStage || {};
+  const order = ["network_id_cache","brand_exact","brand_fuzzy","proxy","sector_etf","index_fallback"];
+  const total = Object.values(by).reduce((s, v) => s + v.spendUsd, 0);
+  $("mix").innerHTML = order.filter((k) => by[k]).map((k) => {
+    const pct = total ? (by[k].spendUsd / total) * 100 : 0;
+    const color = chipClass(k) === "fb" ? "var(--warn)" : chipClass(k) === "px" ? "var(--proxy)" : "var(--accent)";
+    return `<div class="bar-row"><span class="lb">${k.replace(/_/g, " ")}</span>
+      <span class="tr"><span class="fl" style="width:${pct}%;background:${color}"></span></span>
+      <span class="vl">${usd(by[k].spendUsd)} · ${by[k].count}</span></div>`;
+  }).join("") || `<div class="empty" style="padding:10px 0">No purchases yet.</div>`;
+
+  $("mixNote").innerHTML = total
+    ? `<strong style="font-weight:500;color:var(--text)">${(state.stats.brandHitRateBySpend * 100).toFixed(0)}% of spend</strong>
+       resolved to a specific listed company. The rest fell to a sector ETF or the index — small merchants and
+       government payments have no stock behind them.`
+    : "";
+
+  $("settles").innerHTML = state.settlements.length ? state.settlements.slice(0, 10).map((s) => {
+    const ok = s.legs.filter((l) => l.sig).length;
+    return `<div class="row" style="padding:13px 0">
+      <span class="chip">${esc(s.symbol)}</span>
+      <span class="grow num" style="font-size:12px">${esc(s.swapNote)}</span>
+      <span class="val">${usd(s.usdTotal)}<div class="co">${ok}/${s.legs.length} on-chain</div></span>
+    </div>`;
+  }).join("") : `<div class="empty" style="padding:10px 0">No settlements yet.</div>`;
+}
+
+// --------------------------------------------------------------- actions --
+
+async function load() {
+  state = await api("/api/state");
+  if (!currentUser || !state.users.some((u) => u.id === currentUser)) currentUser = state.users[0]?.id ?? null;
+
+  $("userSel").innerHTML = state.users.map((u) =>
+    `<option value="${esc(u.id)}"${u.id === currentUser ? " selected" : ""}>${esc(u.label)} ··${esc(u.cardLast4)}</option>`
+  ).join("") || `<option value="">no cardholder</option>`;
+
+  portfolio = currentUser ? await api(`/api/portfolio/${currentUser}`) : null;
+  renderCard(); renderPortfolio(); renderActivity(); renderProtocol();
+}
+
+const spend = (descriptor, amountUsd) =>
+  api("/api/simulate", { method: "POST", body: JSON.stringify({ userId: currentUser, descriptor, amountUsd }) });
+
+function claim(ticker) {
+  return guard(async () => {
+    const r = await api("/api/claim", { method: "POST", body: JSON.stringify({ userId: currentUser, ticker }) });
+    await load();
+    toast(`${ticker} claimed to your wallet`);
+    window.open(r.explorer, "_blank");
+  });
+}
+
+const DEMO = [
+  ["NIKE.COM 8006536453", 120], ["WHOLEFDS MKT #10255", 86.4],
+  ["GEICO  *AUTO PREMIUM", 142], ["STARLINK INTERNET", 120],
+  ["OPENAI CHATGPT SUBSCR", 200], ["SQ *BLUE BOTTLE COFFEE", 7.25],
+  ["DUNKIN #336781 Q35", 6.5], ["CITY OF OAKLAND PARKING", 4.5],
+];
+
+/**
+ * Wire every control before any network call. The first `load()` waits on a
+ * chain read, and until it resolves the page must still respond to clicks —
+ * otherwise the tabs are dead for a second or two after load, which reads as
+ * a broken app.
+ */
+function wireUI() {
+  document.querySelectorAll("[role=tab]").forEach((b) =>
+    b.addEventListener("click", () => setTab(b.dataset.tab)));
+  $("userSel").addEventListener("change", (e) => { currentUser = e.target.value; load(); });
+
+  $("newUser").addEventListener("click", () => guard(async () => {
+    const u = await api("/api/users", { method: "POST", body: JSON.stringify({ label: `Cardholder ${state.users.length + 1}` }) });
+    currentUser = u.id; await load(); toast(`${u.label} created`);
+  }));
+  $("topUp").addEventListener("click", () => guard(async () => {
+    const r = await api("/api/topup", { method: "POST", body: JSON.stringify({ userId: currentUser, amountUsd: 1000 }) });
+    await load(); toast(`Topped up — ${usd(r.availableUsd)} available`);
+  }));
+  $("rand5").addEventListener("click", () => guard(async () => {
+    await api("/api/simulate", { method: "POST", body: JSON.stringify({ userId: currentUser, count: 5 }) });
+    await load(); setTab("activity");
+  }));
+  $("runDemo").addEventListener("click", () => guard(async () => {
+    for (const [d, a] of DEMO) await spend(d, a);
+    await api("/api/keeper/run", { method: "POST", body: JSON.stringify({ force: true }) });
+    await load(); setTab("portfolio"); toast("8 purchases settled into stock");
+  }));
+  $("runKeeper").addEventListener("click", () => guard(async () => {
+    const r = await api("/api/keeper/run", { method: "POST", body: JSON.stringify({ force: true }) });
+    await load();
+    toast(r.settled.length ? `${r.settled.length} batch(es) settled` : "Nothing pending to settle");
+  }));
+}
+
+async function loadMerchants() {
+  // Fixtures that demonstrate something go first — they are the ones worth
+  // tapping in a demo. The rest stay behind "show all".
+  const merchants = (await api("/api/merchants"))
+    .sort((a, b) => (b.demonstrates ? 1 : 0) - (a.demonstrates ? 1 : 0));
+  let showAll = false;
+
+  function render() {
+    const list = showAll ? merchants : merchants.slice(0, 10);
+    $("shops").innerHTML = list.map((m) =>
+      `<button class="shop" data-d="${esc(m.descriptor)}">
+        <span class="grow"><span class="shop-n">${esc(m.descriptor)}</span>
+        ${m.demonstrates ? `<div class="shop-w">${esc(m.demonstrates)}</div>` : ""}</span>
+        <span class="go">${CHEVRON}</span>
+      </button>`).join("");
+    $("shops").querySelectorAll("[data-d]").forEach((b) => b.addEventListener("click", () =>
+      guard(async () => {
+        const res = await spend(b.dataset.d);
+        await load();
+        const first = res?.results?.[0];
+        toast(first && first.approved === false
+          ? `Declined — ${first.declineReason ?? "not approved"}`
+          : "Purchase recorded");
+        setTab("activity");
+      })));
+    $("showAll").textContent = showAll ? "Show fewer" : `Show all ${merchants.length} merchants`;
+  }
+  render();
+  $("showAll").addEventListener("click", () => { showAll = !showAll; render(); });
+}
+
+function connectStream() {
+  const es = new EventSource("/api/stream");
+  es.onmessage = (m) => {
+    const e = JSON.parse(m.data);
+    if (e.type === "settled") load();
+    else if (e.type === "accrued") {
+      const links = document.querySelector(`.tx[data-id="${e.payload.id}"] .why-links`);
+      if (links && !links.querySelector("a")) {
+        links.insertAdjacentHTML("afterbegin",
+          `<a href="https://explorer.solana.com/tx/${esc(e.payload.accrueSig)}?cluster=devnet" target="_blank">Reward recorded on-chain ↗</a>`);
+        links.querySelector("span")?.remove();
+      }
+    } else if (e.type === "log" && e.payload.level === "error") toast(e.payload.message);
+  };
+}
+
+wireUI();
+connectStream();
+loadMerchants().catch((e) => toast(e.message));
+load().catch((e) => toast(e.message));
+</script>
+</body>
+</html>

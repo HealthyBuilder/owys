@@ -1,0 +1,16 @@
+[toolchain]
+anchor_version = "0.31.1"
+
+[features]
+resolution = true
+skip-lint = false
+
+[programs.devnet]
+equity_back = "BuM8wmDCcUu3uJwphiN5vBEMxGPggL1Kui9greZaHK4"
+
+[provider]
+cluster = "devnet"
+wallet = "/Users/maqiyuan/my-solana-keypair.json"
+
+[scripts]
+test = "pnpm exec tsx scripts/demo.ts"
