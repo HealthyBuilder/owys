@@ -1,0 +1,612 @@
+{
+  "cluster": "devnet",
+  "treasury": "5HqxQtLd2Pzcvg8Lmw8xHzePw9pnuq9GV5fi9HEZZyi6",
+  "mints": [
+    {
+      "ticker": "AAPL",
+      "symbol": "AAPLx",
+      "mint": "8SMnoNp2NEYT1PwTTfzq956815LVLBdccKVbZYEjAsW1",
+      "decimals": 8
+    },
+    {
+      "ticker": "MSFT",
+      "symbol": "MSFTx",
+      "mint": "BvUJiM8k7cedfnkWTkCjGcYZ1tQ8DjMB5xKyYY3H4KwB",
+      "decimals": 8
+    },
+    {
+      "ticker": "AMZN",
+      "symbol": "AMZNx",
+      "mint": "tJvhAz6dikcuunxP6t1AR6QEaWHYLrevNWybGeZqtMr",
+      "decimals": 8
+    },
+    {
+      "ticker": "GOOGL",
+      "symbol": "GOOGLx",
+      "mint": "rjc3nEjosnc39Fqw4DyPA71ZHiwRcdf7f7kuqG6EvyB",
+      "decimals": 8
+    },
+    {
+      "ticker": "META",
+      "symbol": "METAx",
+      "mint": "9TF4k8zg72aoUiSdqvRuQxoSguWR6dbgRJPa1TG2LB8d",
+      "decimals": 8
+    },
+    {
+      "ticker": "TSLA",
+      "symbol": "TSLAx",
+      "mint": "HKS4n7oRp12mcpCW5NeAENARhkq3jW2q6fb3aSUBBY7S",
+      "decimals": 8
+    },
+    {
+      "ticker": "NFLX",
+      "symbol": "NFLXx",
+      "mint": "81dTkCBrukFpf9QpVpXQ5TG35BqPfGXyNy9qFMURtYgD",
+      "decimals": 8
+    },
+    {
+      "ticker": "MCD",
+      "symbol": "MCDx",
+      "mint": "5x2ipqJTeqkUo9iyPAaRzeSy2ms9yVyLxRZVVBnRsZ3J",
+      "decimals": 8
+    },
+    {
+      "ticker": "WMT",
+      "symbol": "WMTx",
+      "mint": "FZLX6URTtP1mi4kQBESYDQCiSjP2UMAjp6JPVrSftkVC",
+      "decimals": 8
+    },
+    {
+      "ticker": "COIN",
+      "symbol": "COINx",
+      "mint": "5ShhwWgG2aR11zRDJj2woGhcxbDL53m22EzGjV4oKQqn",
+      "decimals": 8
+    },
+    {
+      "ticker": "HOOD",
+      "symbol": "HOODx",
+      "mint": "C8KgSijUVfg3E9kvUF7fmiL3yM4JC3vaR1xwJ743UBL3",
+      "decimals": 8
+    },
+    {
+      "ticker": "SPY",
+      "symbol": "SPYx",
+      "mint": "HTmPzxE7SVRjy9Md3vxEugZiri34f846yfPVJ5VDXicA",
+      "decimals": 8
+    },
+    {
+      "ticker": "HD",
+      "symbol": "HDx",
+      "mint": "6SEBnXR2WmocLjvvD1hVAFJP1WJzwwcY1Bdmi2mUvFM",
+      "decimals": 8
+    },
+    {
+      "ticker": "QQQ",
+      "symbol": "QQQx",
+      "mint": "2HK4NR8FeBTx1nxKyfQziNptZQ2GDWqDqFdwKKUdG6d6",
+      "decimals": 8
+    },
+    {
+      "ticker": "VTI",
+      "symbol": "VTIx",
+      "mint": "J6pms5wKn5ZQ1R8HkCmvQkAbApamBtdvUhi5X5VAn8RX",
+      "decimals": 8
+    },
+    {
+      "ticker": "GLD",
+      "symbol": "GLDx",
+      "mint": "HCcokAB4yW7kXoHwE5o7zUwn333ZwUdZZYP8cMgJPn6G",
+      "decimals": 8
+    },
+    {
+      "ticker": "KO",
+      "symbol": "KOx",
+      "mint": "87pDN4DXwHJHKem8u6PhPr3rix8mQg46qqrduDp49Zhr",
+      "decimals": 8
+    },
+    {
+      "ticker": "PEP",
+      "symbol": "PEPx",
+      "mint": "6CdqDGB9wokjsE56TfwhEPreNMQCSAkqKrYorQQtWNYp",
+      "decimals": 8
+    },
+    {
+      "ticker": "PG",
+      "symbol": "PGx",
+      "mint": "7NkZfDj9k5CKFrS3C77fvvsCZHJUf6fEtbnnJggG8SdL",
+      "decimals": 8
+    },
+    {
+      "ticker": "CVX",
+      "symbol": "CVXx",
+      "mint": "5KK3cNtTsn4L5dd9GPcLEMrs4B18QKAoMF9VE1pUk5ij",
+      "decimals": 8
+    },
+    {
+      "ticker": "XOM",
+      "symbol": "XOMx",
+      "mint": "J7ETRnVrGC2EAnVohr7pWN3xLV9GD7sxEfax1LtYSCc6",
+      "decimals": 8
+    },
+    {
+      "ticker": "CMCSA",
+      "symbol": "CMCSAx",
+      "mint": "Cz2pYQcCjkHLuYKKgQpGTwQcPERffhdpyJFsngeFKpYe",
+      "decimals": 8
+    },
+    {
+      "ticker": "GME",
+      "symbol": "GMEx",
+      "mint": "CwZSyAqpkdKhqwqrXsXHPpWWHEmacbLrmwcXpcZGRCPB",
+      "decimals": 8
+    },
+    {
+      "ticker": "BRK.B",
+      "symbol": "BRK.Bx",
+      "mint": "Hn65dQFNen4LiHdcHin9CPrdMxJj7WwYtAMoPmbv8YWD",
+      "decimals": 8
+    },
+    {
+      "ticker": "V",
+      "symbol": "Vx",
+      "mint": "D6KajQkDE2PneZQ6bThzVbwGiEgEQERsAmehbnYmYWdU",
+      "decimals": 8
+    },
+    {
+      "ticker": "MA",
+      "symbol": "MAx",
+      "mint": "DS7chaMn55Eh8AbZS2Uy8cujEi1qs8PUqAh8GRgZGgw8",
+      "decimals": 8
+    },
+    {
+      "ticker": "JPM",
+      "symbol": "JPMx",
+      "mint": "DhPgyvfMN6raVSBuN54AcJLXnjGohdYMMf2DsK8HPnWr",
+      "decimals": 8
+    },
+    {
+      "ticker": "BAC",
+      "symbol": "BACx",
+      "mint": "5LkPLx3bB5Lh9p5tPMgfRYRTfmi2xoqg6WqJqA83b5jw",
+      "decimals": 8
+    },
+    {
+      "ticker": "GS",
+      "symbol": "GSx",
+      "mint": "B2WtkYqQh6DTv9oGs3sZv6KGhYiYSfrXwEKzaehEoV5G",
+      "decimals": 8
+    },
+    {
+      "ticker": "MSTR",
+      "symbol": "MSTRx",
+      "mint": "C1oyu27AtL4JcHsPJn8Ewwea249Q5WUY15gLQyxJ56Ke",
+      "decimals": 8
+    },
+    {
+      "ticker": "NVDA",
+      "symbol": "NVDAx",
+      "mint": "HAtsTtduyqRjmBoPxEiAFVmU2TG1H28drwRo3XCsLYqp",
+      "decimals": 8
+    },
+    {
+      "ticker": "AVGO",
+      "symbol": "AVGOx",
+      "mint": "6QUYNgitgCcLyAsd7rsLw56RynQKqBzDk7qfr5o2YUuY",
+      "decimals": 8
+    },
+    {
+      "ticker": "ORCL",
+      "symbol": "ORCLx",
+      "mint": "6xRAyFAZyYQDfWZVAr9Hxmzvgtt7yfkfKy2c27mDQqfQ",
+      "decimals": 8
+    },
+    {
+      "ticker": "CRM",
+      "symbol": "CRMx",
+      "mint": "2uzkYmu8FUcBR5GP1Xde7KcQ8QHc7CY5JhVbAuAwwmeb",
+      "decimals": 8
+    },
+    {
+      "ticker": "CSCO",
+      "symbol": "CSCOx",
+      "mint": "4PnqxW9MAEy1F4DJYb955fEZGpgwH8RXyoGnGpgFY2kU",
+      "decimals": 8
+    },
+    {
+      "ticker": "IBM",
+      "symbol": "IBMx",
+      "mint": "GzQUR4WAHQmhgH8QSkudjWgfX6oKHTig2qEKTw5k43kR",
+      "decimals": 8
+    },
+    {
+      "ticker": "INTC",
+      "symbol": "INTCx",
+      "mint": "2yHd8Sxpactxvz6BKAYyoAbVUuUn6Svb4P32GKWjXkgw",
+      "decimals": 8
+    },
+    {
+      "ticker": "PLTR",
+      "symbol": "PLTRx",
+      "mint": "25n6a8i6j4jzcKswS2WsiHmBqM7H578ALAWjDtpDoDFX",
+      "decimals": 8
+    },
+    {
+      "ticker": "CRWD",
+      "symbol": "CRWDx",
+      "mint": "H3qkdLDQfYXpHaNFZXjaUFBY8Jqgft5wmmopi9Km783H",
+      "decimals": 8
+    },
+    {
+      "ticker": "MRVL",
+      "symbol": "MRVLx",
+      "mint": "9FFXUBD4tZEAbdWwZVEP39nkyoS1YV9dHtEq5NuWovHn",
+      "decimals": 8
+    },
+    {
+      "ticker": "APP",
+      "symbol": "APPx",
+      "mint": "3MaxEciHoXAQv6j6H4JGrfZfym7u2CRXPYNsH1XDhYZ6",
+      "decimals": 8
+    },
+    {
+      "ticker": "ACN",
+      "symbol": "ACNx",
+      "mint": "EyokzcFpP97Px6v7URyEAZts43Zoenm1EkW8HEBDESww",
+      "decimals": 8
+    },
+    {
+      "ticker": "HON",
+      "symbol": "HONx",
+      "mint": "5Tg2foe3JL1jRX7uSvo3C1fyNzY3yRbGkKeiM8jhcZbM",
+      "decimals": 8
+    },
+    {
+      "ticker": "LIN",
+      "symbol": "LINx",
+      "mint": "5mp5ZXQUstZrZgWTx8H79xguVaEsCsVEfPSx5a5iYY5M",
+      "decimals": 8
+    },
+    {
+      "ticker": "ABBV",
+      "symbol": "ABBVx",
+      "mint": "8KZCGiUKJ6zXVT4wuV2wfJVnHoBDnCykhUYTGGRYF1pR",
+      "decimals": 8
+    },
+    {
+      "ticker": "ABT",
+      "symbol": "ABTx",
+      "mint": "DVprwVUXZU6k8mtf4PGEHrJDahC64efGKeqPXHCBTEn1",
+      "decimals": 8
+    },
+    {
+      "ticker": "AZN",
+      "symbol": "AZNx",
+      "mint": "5Qd1sncGsebnhMpjCEhnEvvdETuFmp56eAVzEzaYhPoF",
+      "decimals": 8
+    },
+    {
+      "ticker": "DHR",
+      "symbol": "DHRx",
+      "mint": "7nt35oRdBg2FyjUTpXFirEvv2VTCjU1a2arVpbLMicFh",
+      "decimals": 8
+    },
+    {
+      "ticker": "JNJ",
+      "symbol": "JNJx",
+      "mint": "EZiQVtrFB9Buhm1RrmJ8LMJUbKD2TNZCJZYiMTD4MJBd",
+      "decimals": 8
+    },
+    {
+      "ticker": "LLY",
+      "symbol": "LLYx",
+      "mint": "FWkfQYNLVw71hpSzDU8ZacqUkqyCctaZmbKmQa24E41W",
+      "decimals": 8
+    },
+    {
+      "ticker": "MDT",
+      "symbol": "MDTx",
+      "mint": "9xF3DQRnW6z5HnXNiVywJuByohZUT3fqJiwFnX4CUEH7",
+      "decimals": 8
+    },
+    {
+      "ticker": "MRK",
+      "symbol": "MRKx",
+      "mint": "CfQSDFRkiiSa4ShRMxAxQPBYMq9EkiXVVpLBkjw1gKGZ",
+      "decimals": 8
+    },
+    {
+      "ticker": "NVO",
+      "symbol": "NVOx",
+      "mint": "9tr27e7KjN31VM6zyqgUAQpL8MMy8iaHhruTnB7CbCyB",
+      "decimals": 8
+    },
+    {
+      "ticker": "PFE",
+      "symbol": "PFEx",
+      "mint": "E5VTXCNNvStdJ7FnYvTmfVeRhF36bLV4dthxYN6XSSQE",
+      "decimals": 8
+    },
+    {
+      "ticker": "TMO",
+      "symbol": "TMOx",
+      "mint": "CugzPySsUxArc8AKtJvX61M5ZaZcFynDw7uJ93fLRq9d",
+      "decimals": 8
+    },
+    {
+      "ticker": "UNH",
+      "symbol": "UNHx",
+      "mint": "C45PHUTZPnnrPKhALFppXDuYnmtq8ptJTbdjR4HssRLs",
+      "decimals": 8
+    },
+    {
+      "ticker": "PM",
+      "symbol": "PMx",
+      "mint": "2ZbiGobQzwGoZ1yyJf26fgyEeBrysfD1CSZsVZRH9pzZ",
+      "decimals": 8
+    },
+    {
+      "ticker": "SPCX",
+      "symbol": "SPCX",
+      "mint": "Ccs6oqutqVyQSgR7FLXeeUFpXcWHU7tckxrCDLtxRP8f",
+      "decimals": 8
+    },
+    {
+      "ticker": "COST",
+      "symbol": "COST",
+      "mint": "7b2958FgjAd5vtFNWAm8hV94q8kCgTCkAZtnUnzjkxbc",
+      "decimals": 8
+    },
+    {
+      "ticker": "LULU",
+      "symbol": "LULU",
+      "mint": "HNfgDmq4FTAYez8jx7THScf5AF3rD32rMdpnB8JL4LpP",
+      "decimals": 8
+    },
+    {
+      "ticker": "SHOP",
+      "symbol": "SHOP",
+      "mint": "GSGqZ4sKhbmGEsruTQXhdENKuhw3tBYBzR7sNGJJpKFQ",
+      "decimals": 8
+    },
+    {
+      "ticker": "RBLX",
+      "symbol": "RBLX",
+      "mint": "GHDoK4EhH7rFZhy4A5qAytP7it92HkDb7avHBiGoFEN6",
+      "decimals": 8
+    },
+    {
+      "ticker": "UPS",
+      "symbol": "UPS",
+      "mint": "9NwTh1XEeUmjTPGAVsyJVDrctNoCRmTPJhzo6S9f3wpK",
+      "decimals": 8
+    },
+    {
+      "ticker": "MGM",
+      "symbol": "MGM",
+      "mint": "NCZRChSvgLPhxa6SyjHpq9pBMK4QqCQkt7hoAB3eTxj",
+      "decimals": 8
+    },
+    {
+      "ticker": "RDDT",
+      "symbol": "RDDT",
+      "mint": "72gEJqLHgDqGUfFge6A2unaZzAAEFXuGpz9vJkj1yF6Q",
+      "decimals": 8
+    },
+    {
+      "ticker": "DELL",
+      "symbol": "DELL",
+      "mint": "AVpxFmHMKcm3ou2Z8xHbCTKLE7qqD8EiaggzhXrcTrS",
+      "decimals": 8
+    },
+    {
+      "ticker": "BA",
+      "symbol": "BA",
+      "mint": "2WfGnLxJgAWnSAnWuqhKwjiJMrEYAcGQPQXvvD5dCdF5",
+      "decimals": 8
+    },
+    {
+      "ticker": "BABA",
+      "symbol": "BABA",
+      "mint": "D4JsCBra5M7SsrAnx5BPGZf46xeS6PzK4q9Z28rc5S8Y",
+      "decimals": 8
+    },
+    {
+      "ticker": "LMT",
+      "symbol": "LMT",
+      "mint": "3h8XqpbEPLpBADymj2YGxd58CUrDR7UUtmamyb2UBVrQ",
+      "decimals": 8
+    },
+    {
+      "ticker": "RIVN",
+      "symbol": "RIVN",
+      "mint": "JB9ZAWiuMfuupbaQwiwdHVSMs7fcjZSDyBtcwGnCpA9z",
+      "decimals": 8
+    },
+    {
+      "ticker": "SNAP",
+      "symbol": "SNAP",
+      "mint": "3ntTugLPzaGD9csyEQhQTqEFGeHuNbGuaNGbWcQwpkDL",
+      "decimals": 8
+    },
+    {
+      "ticker": "DJT",
+      "symbol": "DJT",
+      "mint": "HnjNnnQXPuWNXDwB3gGMvZsGhJ2qYoyuTWEmj1qjZ1C8",
+      "decimals": 8
+    },
+    {
+      "ticker": "HIMS",
+      "symbol": "HIMS",
+      "mint": "Huowxpmzkg8Ysp9daGhu8ft83W76xme3r7KM3K9xrVah",
+      "decimals": 8
+    },
+    {
+      "ticker": "QUBT",
+      "symbol": "QUBT",
+      "mint": "Hjjo6QZ2qENtnF7LgkEzryR5xgUxh8FoSoMKMmBQzBis",
+      "decimals": 8
+    },
+    {
+      "ticker": "NKE",
+      "symbol": "NKEon",
+      "mint": "33W2SUApJE8DZ2e3R9MEKfq77MMnAt8TpXqGrFjRSS8n",
+      "decimals": 8
+    },
+    {
+      "ticker": "SBUX",
+      "symbol": "SBUXon",
+      "mint": "9k2vMi5CB3K5HsaBNH4SxojFXkXViF1TR8Xx5orFJuij",
+      "decimals": 8
+    },
+    {
+      "ticker": "TGT",
+      "symbol": "TGTon",
+      "mint": "5nFSKWK6J2GFoeHuNwyZAjGaae5d59Cva9V3uspUTE8E",
+      "decimals": 8
+    },
+    {
+      "ticker": "UBER",
+      "symbol": "UBERon",
+      "mint": "DAxiJaKchsc2iecC4hJcwNrXKLyqCfYmcsLSf8U4oVff",
+      "decimals": 8
+    },
+    {
+      "ticker": "DASH",
+      "symbol": "DASHon",
+      "mint": "AA1NunahwntHj9Lp9GJpYzhTHYWTawMXP4WSTrqjizzw",
+      "decimals": 8
+    },
+    {
+      "ticker": "ABNB",
+      "symbol": "ABNBon",
+      "mint": "FRYhFAhzkPCMP1ziy1avwQA45c9uLWr6JsxgStoy5of7",
+      "decimals": 8
+    },
+    {
+      "ticker": "CMG",
+      "symbol": "CMGon",
+      "mint": "8nojj7mBx3yDBhhdASkAn9QJuvCtFbawWueg6w22zUPs",
+      "decimals": 8
+    },
+    {
+      "ticker": "DIS",
+      "symbol": "DISon",
+      "mint": "DEvgeSnanc5sxy2YEM8SZVpEfBDyGaDFCX2e3ZaEyv7o",
+      "decimals": 8
+    },
+    {
+      "ticker": "SPOT",
+      "symbol": "SPOTon",
+      "mint": "HRYVGGDv6spmuRNSi1h5vdkawh3obVsHUt7xLa6AMuzu",
+      "decimals": 8
+    },
+    {
+      "ticker": "LYFT",
+      "symbol": "LYFTon",
+      "mint": "7qZN9DGNoMVWpAUmKtnQ51FcvLicz8WwtpyWGr9ZsejA",
+      "decimals": 8
+    },
+    {
+      "ticker": "TJX",
+      "symbol": "TJXon",
+      "mint": "BpdXjLU3K5KJsK9jwiWjC18feDJXydpquhVcn7uY48G3",
+      "decimals": 8
+    },
+    {
+      "ticker": "QSR",
+      "symbol": "QSRon",
+      "mint": "DtF12DUGKQ67dPvtk3qe7RGbSHji9jTsSW2xz7stpF8G",
+      "decimals": 8
+    },
+    {
+      "ticker": "DAL",
+      "symbol": "DALon",
+      "mint": "FPqtvdPZhkQSTU1x1fUctLUScsCrxmwk5SZaZzDBPsC2",
+      "decimals": 8
+    },
+    {
+      "ticker": "UAL",
+      "symbol": "UALon",
+      "mint": "4AH84xGjZHPH6DDKqCsJU3nSrA7kdd9E7hsmZWQ5PbCP",
+      "decimals": 8
+    },
+    {
+      "ticker": "MAR",
+      "symbol": "MARon",
+      "mint": "RTJVLpnGnJpHrv4T6RFC3TLdYrPgpCeNZN3pfR3ha4S",
+      "decimals": 8
+    },
+    {
+      "ticker": "YUM",
+      "symbol": "YUMon",
+      "mint": "Ex9NyJfToTkhDwfR48MxonyuX2UCPk2DBbAUXiVpetDZ",
+      "decimals": 8
+    },
+    {
+      "ticker": "CVS",
+      "symbol": "CVSon",
+      "mint": "2JNAkSD2H6ebM6uuEUFyxa4ieMJcrhso633N7d4e83Wn",
+      "decimals": 8
+    },
+    {
+      "ticker": "KR",
+      "symbol": "KRon",
+      "mint": "GhDqYW2LLw9YRq9A8LnTLjH7du3NPLnXp6FXGVAyvJoB",
+      "decimals": 8
+    },
+    {
+      "ticker": "ULTA",
+      "symbol": "ULTAon",
+      "mint": "DXRa8RRpDXJ6qTdmc7PeY5wMmKzFYYa3HrgmuZeXowDF",
+      "decimals": 8
+    },
+    {
+      "ticker": "GAP",
+      "symbol": "GAPon",
+      "mint": "BFNjNKfkPpBQ1Rb3yWsaNWC9YP5oyQLvChM2ccEMi2kW",
+      "decimals": 8
+    },
+    {
+      "ticker": "LOW",
+      "symbol": "LOWon",
+      "mint": "3NJce3JYhS4MtNbG1Qfki58viEpjRoJCFncrNYExcGe6",
+      "decimals": 8
+    },
+    {
+      "ticker": "BBY",
+      "symbol": "BBYon",
+      "mint": "3xjvyUjXL6A6koevZRqnoUBbM8an6VJNuC9z3qVxNhsC",
+      "decimals": 8
+    },
+    {
+      "ticker": "BKNG",
+      "symbol": "BKNGon",
+      "mint": "HXnoSiY2NXadLUk1aC9basLugwKDRQhNjJRnyTmHMr1H",
+      "decimals": 8
+    },
+    {
+      "ticker": "DPZ",
+      "symbol": "DPZon",
+      "mint": "mLJoZ4zh69CNgd54Q4fuFgJRNZ5Kf7kfgrsSowBXATa",
+      "decimals": 8
+    },
+    {
+      "ticker": "SHEL",
+      "symbol": "SHELon",
+      "mint": "7peifsMMdm1KBmbYqNYXCB27aS97JQcTxmaKEkpe5uH4",
+      "decimals": 8
+    },
+    {
+      "ticker": "ADBE",
+      "symbol": "ADBEon",
+      "mint": "2HXXK4yt7kLhnNbP8AZavgfJZVwdFCfWcMpLCeYBSij3",
+      "decimals": 8
+    },
+    {
+      "ticker": "PYPL",
+      "symbol": "PYPLon",
+      "mint": "DSvRh6Bso8fq1wwgs1Crd2Lu3om8hrcUfvYVscnRdpgi",
+      "decimals": 8
+    }
+  ]
+}

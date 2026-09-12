@@ -4,6 +4,7 @@
   "private": true,
   "type": "module",
   "description": "Owys PoC \u2014 spend at a company, own a piece of it (Solana, xStocks, all-mock)",
+  "packageManager": "pnpm@10.13.1",
   "scripts": {
     "mint-tickers": "tsx scripts/mint-mock-tickers.ts",
     "init-config": "tsx scripts/init-config.ts",
@@ -19,17 +20,22 @@
     "@solana/spl-token": "^0.4.9",
     "@solana/web3.js": "^1.98.0",
     "bn.js": "^5.2.5",
-    "fastify": "^5.2.1"
+    "fastify": "^5.2.1",
+    "tsx": "^4.19.2"
   },
   "devDependencies": {
     "@types/bn.js": "^5.2.0",
     "@types/node": "^22.13.0",
-    "tsx": "^4.19.2",
     "typescript": "^5.7.3"
   },
   "pnpm": {
     "onlyBuiltDependencies": [
       "esbuild"
+    ],
+    "ignoredBuiltDependencies": [
+      "bigint-buffer",
+      "bufferutil",
+      "utf-8-validate"
     ]
   }
 }

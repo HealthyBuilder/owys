@@ -1,0 +1,13 @@
+.git
+node_modules
+target
+.anchor
+docs
+Dockerfile
+.dockerignore
+.gcloudignore
+
+# local runtime state — the container makes its own
+ledger.json
+.demo-users.json
+.DS_Store

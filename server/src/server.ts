@@ -280,10 +280,13 @@ try {
 
 keeper.start(Number(process.env.KEEPER_INTERVAL_MS ?? 30_000));
 
-await app.listen({ port: PORT, host: "127.0.0.1" });
+// Containers must accept traffic from outside the namespace; a local run has
+// no reason to be reachable off-box.
+const HOST = process.env.HOST ?? (process.env.DATA_DIR ? "0.0.0.0" : "127.0.0.1");
+await app.listen({ port: PORT, host: HOST });
 console.log(`
-  Equity-Back Card  —  all-mock PoC
-  dashboard   http://127.0.0.1:${PORT}
+  Owys  —  all-mock PoC
+  dashboard   http://${HOST === "0.0.0.0" ? "0.0.0.0" : "127.0.0.1"}:${PORT}
   cluster     ${chain.CLUSTER}
   program     ${chain.programId().toBase58()}
   cashback    ${(config.rewardBps / 100).toFixed(2)}%

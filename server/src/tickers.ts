@@ -30,10 +30,12 @@
 
 import fs from "node:fs";
 import path from "node:path";
-import { fileURLToPath } from "node:url";
+import { ROOT } from "./paths.ts";
 
-const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "../..");
-export const TICKER_FILE = path.join(ROOT, ".mock-tickers.json");
+/** Read-only config baked into the image; not mutable state, so not DATA_DIR. */
+export const TICKER_FILE = process.env.TICKER_FILE
+  ? path.resolve(process.env.TICKER_FILE)
+  : path.join(ROOT, ".mock-tickers.json");
 
 export type Issuer = "xStocks" | "Sunrise" | "Ondo";
 

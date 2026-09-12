@@ -1,0 +1,10 @@
+.git
+.gitignore
+node_modules
+target
+.anchor
+.DS_Store
+
+# local runtime state only — .mock-tickers.json is deliberately NOT listed here
+ledger.json
+.demo-users.json

@@ -26,6 +26,9 @@ importers:
       fastify:
         specifier: ^5.2.1
         version: 5.12.3
+      tsx:
+        specifier: ^4.19.2
+        version: 4.23.13
     devDependencies:
       '@types/bn.js':
         specifier: ^5.2.0
@@ -33,9 +36,6 @@ importers:
       '@types/node':
         specifier: ^22.13.0
         version: 22.20.2
-      tsx:
-        specifier: ^4.19.2
-        version: 4.23.13
       typescript:
         specifier: ^5.7.3
         version: 5.9.3

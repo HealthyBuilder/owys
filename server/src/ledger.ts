@@ -11,12 +11,10 @@
  */
 
 import fs from "node:fs";
-import path from "node:path";
-import { fileURLToPath } from "node:url";
 import type { Resolution, CardAuthorization } from "./merchantResolver.ts";
+import { dataPath } from "./paths.ts";
 
-const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "../..");
-const DB_FILE = path.join(ROOT, "ledger.json");
+const DB_FILE = dataPath("ledger.json");
 
 /** What a new card is funded with, in the absence of a real USDC deposit flow. */
 export const STARTING_BALANCE_USD = 2_500;

@@ -10,16 +10,14 @@
  */
 
 import fs from "node:fs";
-import path from "node:path";
 import { randomUUID } from "node:crypto";
-import { fileURLToPath } from "node:url";
 import { Keypair } from "@solana/web3.js";
 import * as chain from "./chain.ts";
 import * as ledger from "./ledger.ts";
 import { log } from "./bus.ts";
+import { dataPath } from "./paths.ts";
 
-const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "../..");
-const KEY_FILE = path.join(ROOT, ".demo-users.json");
+const KEY_FILE = dataPath(".demo-users.json");
 
 /** Enough for the user PDA plus a few claim ATAs. */
 const FUND_SOL = 0.02;

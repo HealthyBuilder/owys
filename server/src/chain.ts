@@ -36,7 +36,19 @@ import {
 } from "@solana/spl-token";
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "../..");
-const IDL_PATH = path.join(ROOT, "target/idl/equity_back.json");
+
+/**
+ * `anchor build` writes the IDL under target/, which is not committed. A copy
+ * lives at idl/ so a clone — or a container image — can talk to the program
+ * without a Rust toolchain. Prefer the fresh build output when present.
+ */
+const IDL_CANDIDATES = [
+  path.join(ROOT, "target/idl/equity_back.json"),
+  path.join(ROOT, "idl/equity_back.json"),
+];
+function idlPath(): string | null {
+  return IDL_CANDIDATES.find((p) => fs.existsSync(p)) ?? null;
+}
 
 export const RPC_URL = process.env.RPC_URL ?? "https://api.devnet.solana.com";
 export const CLUSTER = process.env.CLUSTER ?? "devnet";
@@ -50,9 +62,28 @@ function readKeypair(file: string): Keypair {
 }
 
 export const WALLET_PATH =
-  process.env.WALLET ?? path.join(process.env.HOME!, "my-solana-keypair.json");
+  process.env.WALLET ?? path.join(process.env.HOME ?? "", "my-solana-keypair.json");
 
-export const wallet = readKeypair(WALLET_PATH);
+/**
+ * In a container there is no keypair file. WALLET_SECRET_KEY carries the key
+ * instead, as either the raw JSON array Solana writes or its base64 form —
+ * inject it from Secret Manager, never bake it into an image.
+ */
+function loadWallet(): Keypair {
+  const secret = process.env.WALLET_SECRET_KEY?.trim();
+  if (secret) {
+    const bytes = secret.startsWith("[")
+      ? (JSON.parse(secret) as number[])
+      : Array.from(Buffer.from(secret, "base64"));
+    if (bytes.length !== 64) {
+      throw new Error(`WALLET_SECRET_KEY decoded to ${bytes.length} bytes, expected 64`);
+    }
+    return Keypair.fromSecretKey(Uint8Array.from(bytes));
+  }
+  return readKeypair(WALLET_PATH);
+}
+
+export const wallet = loadWallet();
 /** Same key wearing three hats in the PoC — see the module comment. */
 export const authority = wallet;
 export const oracleSigner = wallet;
@@ -100,10 +131,13 @@ let _program: anchor.Program | null = null;
 
 export function program(): anchor.Program {
   if (_program) return _program;
-  if (!fs.existsSync(IDL_PATH)) {
-    throw new Error(`IDL missing at ${IDL_PATH} — run \`anchor build\` first.`);
+  const found = idlPath();
+  if (!found) {
+    throw new Error(
+      `IDL not found at any of:\n  ${IDL_CANDIDATES.join("\n  ")}\nRun \`anchor build\` first.`,
+    );
   }
-  const idl = JSON.parse(fs.readFileSync(IDL_PATH, "utf8")) as Idl;
+  const idl = JSON.parse(fs.readFileSync(found, "utf8")) as Idl;
   const provider = new AnchorProvider(connection, new Wallet(wallet), {
     commitment: COMMITMENT,
   });
