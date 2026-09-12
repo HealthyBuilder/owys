@@ -10,7 +10,7 @@
 # Environment overrides:
 #   REGION       deployment region            (default us-central1)
 #   SERVICE      Cloud Run service name       (default owys)
-#   WALLET       local keypair to upload      (default ~/my-solana-keypair.json)
+#   WALLET       local keypair to upload      (default ~/.config/solana/id.json)
 #   RPC_URL      Solana RPC for the service   (default public devnet)
 
 set -euo pipefail
@@ -18,7 +18,7 @@ set -euo pipefail
 REGION="${REGION:-us-central1}"
 SERVICE="${SERVICE:-owys}"
 SECRET_NAME="${SECRET_NAME:-owys-wallet}"
-WALLET="${WALLET:-$HOME/my-solana-keypair.json}"
+WALLET="${WALLET:-$HOME/.config/solana/id.json}"
 RPC_URL="${RPC_URL:-https://api.devnet.solana.com}"
 
 die() { echo "error: $*" >&2; exit 1; }

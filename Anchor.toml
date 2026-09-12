@@ -10,7 +10,7 @@ equity_back = "BuM8wmDCcUu3uJwphiN5vBEMxGPggL1Kui9greZaHK4"
 
 [provider]
 cluster = "devnet"
-wallet = "/Users/maqiyuan/my-solana-keypair.json"
+wallet = "~/.config/solana/id.json"
 
 [scripts]
 test = "pnpm exec tsx scripts/demo.ts"

@@ -61,8 +61,23 @@ function readKeypair(file: string): Keypair {
   return Keypair.fromSecretKey(Uint8Array.from(raw));
 }
 
+/**
+ * Which keypair signs. In order: an explicit WALLET path, whatever the Solana
+ * CLI is configured to use, then the CLI's default location. Reading the CLI
+ * config means a machine already set up for Solana development works with no
+ * configuration here and no absolute paths in the repo.
+ */
+function cliConfiguredKeypair(): string | null {
+  const cfg = path.join(process.env.HOME ?? "", ".config/solana/cli/config.yml");
+  if (!fs.existsSync(cfg)) return null;
+  const match = fs.readFileSync(cfg, "utf8").match(/^\s*keypair_path:\s*(.+?)\s*$/m);
+  return match ? match[1].replace(/^~/, process.env.HOME ?? "") : null;
+}
+
 export const WALLET_PATH =
-  process.env.WALLET ?? path.join(process.env.HOME ?? "", "my-solana-keypair.json");
+  process.env.WALLET ??
+  cliConfiguredKeypair() ??
+  path.join(process.env.HOME ?? "", ".config/solana/id.json");
 
 /**
  * In a container there is no keypair file. WALLET_SECRET_KEY carries the key

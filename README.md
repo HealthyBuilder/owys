@@ -49,12 +49,8 @@ Four screens — **Card**, **Portfolio**, **Activity**, **Simulate** — plus a
 de-emphasised **Protocol** view holding the program addresses, issuer
 breakdown, resolution mix and settlement batches.
 
-Settlement spans every issuer putting equities on Solana — xStocks, Sunrise and
-Ondo Global Markets — and each holding records which one it came from. That is
-not cosmetic: measured over the same 35 merchant fixtures, settling in one
-issuer reaches **37%** of them, settling across all three reaches **80%**. The
-resolver identifies a listed parent 94% of the time either way, so the binding
-constraint is the issuers' ticker lists, not merchant matching.
+Settlement spans multiple tokenized-equity issuers, and every holding records
+which one it came from.
 
 ## What is real, what is mocked
 
@@ -69,9 +65,8 @@ constraint is the issuers' ticker lists, not merchant matching.
 
 ## Documentation
 
-- [docs/OVERVIEW.zh.md](docs/OVERVIEW.zh.md) — 功能说明：每个页面在做什么，真的 vs 模拟的，现实约束
-- [docs/ARCHITECTURE.zh.md](docs/ARCHITECTURE.zh.md) — 技术说明：链上程序、解析管道、发行方路由、部署
-- [docs/DEPLOY.md](docs/DEPLOY.md) — deploying to Google Cloud Run
+- [docs/OVERVIEW.md](docs/OVERVIEW.md) — what each screen does, what is real and what is mocked
+- [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) — on-chain program, resolver, issuer routing
 
 ## Deployed (devnet)
 
