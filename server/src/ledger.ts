@@ -123,6 +123,21 @@ export function reset(): void {
   persist();
 }
 
+export function isEmpty(): boolean {
+  return db.users.length === 0 && db.auths.length === 0;
+}
+
+/** Bulk load, for restoring a seeded demo without a write per row. */
+export function replaceAll(next: {
+  users: UserRow[];
+  auths: AuthRow[];
+  settlements: SettlementRow[];
+  networkIdCache: Db["networkIdCache"];
+}): void {
+  db = { ...structuredClone(EMPTY), ...next };
+  persist();
+}
+
 // ------------------------------------------------------------------- users --
 
 export function addUser(row: UserRow): UserRow {

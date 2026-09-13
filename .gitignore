@@ -8,6 +8,7 @@ target/
 
 # contains cardholder PRIVATE KEYS
 .demo-users.json
+seed/demo-data.json
 
 # NOTE: .mock-tickers.json is intentionally NOT ignored. It holds only devnet
 # mint addresses (no secrets) and both a fresh clone and the deployed image

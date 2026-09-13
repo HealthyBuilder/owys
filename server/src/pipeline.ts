@@ -36,7 +36,7 @@ export interface HandleResult {
 export async function handleAuthorization(
   incoming: CardAuthorization,
   userId: string,
-  opts: { sync?: boolean } = {},
+  opts: { sync?: boolean; ts?: number } = {},
 ): Promise<HandleResult> {
   // Same idempotency key as the on-chain Accrual PDA seed. Card networks
   // redeliver webhooks; both layers must refuse the second one.
@@ -62,7 +62,7 @@ export async function handleAuthorization(
       networkId: incoming.networkId,
       city: incoming.city,
       country: incoming.country,
-      ts: Date.now(),
+      ts: opts.ts ?? Date.now(),
       rewardMicro: 0,
       rewardUsd: 0,
       resolution,
@@ -89,7 +89,9 @@ export async function handleAuthorization(
     networkId: incoming.networkId,
     city: incoming.city,
     country: incoming.country,
-    ts: Date.now(),
+    // Seeded history can backdate this. It is display-only — the on-chain
+    // accrual always stamps the chain's own clock.
+    ts: opts.ts ?? Date.now(),
     rewardMicro,
     rewardUsd,
     resolution,

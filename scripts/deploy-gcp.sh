@@ -18,6 +18,8 @@ set -euo pipefail
 REGION="${REGION:-us-central1}"
 SERVICE="${SERVICE:-owys}"
 SECRET_NAME="${SECRET_NAME:-owys-wallet}"
+SEED_SECRET="${SEED_SECRET:-owys-seed}"
+SEED_FILE_PATH="${SEED_FILE_PATH:-seed/demo-data.json}"
 RUN_SA_ID="${RUN_SA_ID:-owys-run}"
 # Resolve the same keypair the server resolves, or the deployed service signs
 # with a key the program does not recognise and every accrual is rejected.
@@ -66,6 +68,24 @@ else
   echo "  created secret $SECRET_NAME"
 fi
 
+# Cloud Run scales to zero onto a tmpfs, so a cold start begins with an empty
+# ledger. Shipping the demo dataset as a secret lets the service restore it —
+# it carries cardholder private keys, so it does not belong in the image.
+if [ -f "$SEED_FILE_PATH" ]; then
+  echo "  seeding from ${SEED_FILE_PATH}"
+  SEED_B64="$(gzip -c "$SEED_FILE_PATH" | base64)"
+  if gcloud secrets describe "$SEED_SECRET" --quiet >/dev/null 2>&1; then
+    printf '%s' "$SEED_B64" | gcloud secrets versions add "$SEED_SECRET" --data-file=- --quiet >/dev/null
+  else
+    printf '%s' "$SEED_B64" | gcloud secrets create "$SEED_SECRET" --data-file=- \
+      --replication-policy=automatic --quiet >/dev/null
+  fi
+  SEED_ARG="--set-secrets=WALLET_SECRET_KEY=${SECRET_NAME}:latest,SEED_JSON=${SEED_SECRET}:latest"
+else
+  echo "  no ${SEED_FILE_PATH} — deploying without demo data"
+  SEED_ARG="--set-secrets=WALLET_SECRET_KEY=${SECRET_NAME}:latest"
+fi
+
 step "3/5  creating a least-privilege runtime identity"
 PROJECT_NUMBER="$(gcloud projects describe "$PROJECT" --format='value(projectNumber)')"
 BUILD_SA="${PROJECT_NUMBER}-compute@developer.gserviceaccount.com"
@@ -84,10 +104,13 @@ fi
 
 gcloud projects add-iam-policy-binding "$PROJECT" \
   --member="serviceAccount:${RUN_SA}" --role=roles/logging.logWriter --quiet >/dev/null
-gcloud secrets add-iam-policy-binding "$SECRET_NAME" \
-  --member="serviceAccount:${RUN_SA}" \
-  --role=roles/secretmanager.secretAccessor --quiet >/dev/null
-echo "  ${RUN_SA}: logging.logWriter + secretAccessor on ${SECRET_NAME}, nothing else"
+for secret in "$SECRET_NAME" "$SEED_SECRET"; do
+  gcloud secrets describe "$secret" --quiet >/dev/null 2>&1 || continue
+  gcloud secrets add-iam-policy-binding "$secret" \
+    --member="serviceAccount:${RUN_SA}" \
+    --role=roles/secretmanager.secretAccessor --quiet >/dev/null
+done
+echo "  ${RUN_SA}: logging.logWriter + secretAccessor on its own secrets, nothing else"
 
 step "4/5  granting the build service account its roles"
 # New projects no longer grant the Compute Engine default service account the
@@ -124,7 +147,7 @@ gcloud run deploy "$SERVICE" \
   --cpu=1 \
   --timeout=300 \
   --set-env-vars="CLUSTER=devnet,RPC_URL=${RPC_URL},DATA_DIR=/tmp/owys,REWARD_BPS=300" \
-  --set-secrets="WALLET_SECRET_KEY=${SECRET_NAME}:latest" \
+  "$SEED_ARG" \
   --quiet
 
 URL="$(gcloud run services describe "$SERVICE" --region "$REGION" --format='value(status.url)')"

@@ -24,6 +24,7 @@ import { log, publish, subscribe } from "./bus.ts";
 import { resolveMerchant, type CardAuthorization } from "./merchantResolver.ts";
 import { handleAuthorization, REWARD_BPS } from "./pipeline.ts";
 import { BY_TICKER, ISSUERS, loadMints, loadMintsMeta, quote } from "./tickers.ts";
+import { maybeSeed } from "./seed.ts";
 import { MERCHANT_POOL, buildAuthorization, findFixture, randomAuthorization } from "./cardSim.ts";
 import {
   BadInput, MAX_DEMO_USERS, requireAmountUsd, requireDescriptor, requireId,
@@ -298,6 +299,10 @@ try {
   console.error(err.message);
   process.exit(1);
 }
+
+// A cold start begins with an empty tmpfs ledger; restore the demo if one is
+// bundled, before anything can observe the empty state.
+maybeSeed();
 
 keeper.start(Number(process.env.KEEPER_INTERVAL_MS ?? 30_000));
 

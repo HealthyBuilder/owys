@@ -12,7 +12,9 @@
     "server": "tsx server/src/server.ts",
     "server:watch": "tsx watch server/src/server.ts",
     "demo": "tsx scripts/demo.ts",
-    "resolver-report": "tsx scripts/resolver-report.ts"
+    "resolver-report": "tsx scripts/resolver-report.ts",
+    "demo-data": "tsx scripts/generate-demo-data.ts",
+    "export-seed": "tsx scripts/export-seed.ts"
   },
   "dependencies": {
     "@coral-xyz/anchor": "^0.31.1",

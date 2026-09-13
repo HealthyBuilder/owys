@@ -1,0 +1,9 @@
+name = "owys"
+main = "worker.js"
+compatibility_date = "2026-09-01"
+
+# Streaming request bodies need this; without it an SSE or upload passthrough
+# is buffered and the connection stalls.
+compatibility_flags = ["streams_enable_constructors"]
+
+workers_dev = true
