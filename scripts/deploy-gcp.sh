@@ -10,7 +10,7 @@
 # Environment overrides:
 #   REGION       deployment region            (default us-central1)
 #   SERVICE      Cloud Run service name       (default owys)
-#   WALLET       local keypair to upload      (default ~/.config/solana/id.json)
+#   WALLET       local keypair to upload      (default: the Solana CLI's configured keypair)
 #   RPC_URL      Solana RPC for the service   (default public devnet)
 
 set -euo pipefail
@@ -18,7 +18,14 @@ set -euo pipefail
 REGION="${REGION:-us-central1}"
 SERVICE="${SERVICE:-owys}"
 SECRET_NAME="${SECRET_NAME:-owys-wallet}"
-WALLET="${WALLET:-$HOME/.config/solana/id.json}"
+# Resolve the same keypair the server resolves, or the deployed service signs
+# with a key the program does not recognise and every accrual is rejected.
+cli_keypair() {
+  local cfg="$HOME/.config/solana/cli/config.yml"
+  [ -f "$cfg" ] || return 1
+  sed -n 's/^[[:space:]]*keypair_path:[[:space:]]*//p' "$cfg" | head -1 | sed "s|^~|$HOME|"
+}
+WALLET="${WALLET:-$(cli_keypair || echo "$HOME/.config/solana/id.json")}"
 RPC_URL="${RPC_URL:-https://api.devnet.solana.com}"
 
 die() { echo "error: $*" >&2; exit 1; }
@@ -41,11 +48,11 @@ echo "project : $PROJECT"
 echo "region  : $REGION"
 echo "service : $SERVICE"
 
-step "1/4  enabling APIs"
+step "1/5  enabling APIs"
 gcloud services enable run.googleapis.com cloudbuild.googleapis.com \
   secretmanager.googleapis.com artifactregistry.googleapis.com --quiet
 
-step "2/4  storing the wallet key in Secret Manager"
+step "2/5  storing the wallet key in Secret Manager"
 # The service signs accruals and settlement transfers, so it needs the key.
 # It goes in Secret Manager rather than an env var or the image so it is never
 # printed in deploy logs or baked into a layer.
@@ -58,7 +65,7 @@ else
   echo "  created secret $SECRET_NAME"
 fi
 
-step "3/4  granting the Cloud Run service account access"
+step "3/5  granting the Cloud Run service account access"
 PROJECT_NUMBER="$(gcloud projects describe "$PROJECT" --format='value(projectNumber)')"
 RUNTIME_SA="${PROJECT_NUMBER}-compute@developer.gserviceaccount.com"
 gcloud secrets add-iam-policy-binding "$SECRET_NAME" \
@@ -66,16 +73,33 @@ gcloud secrets add-iam-policy-binding "$SECRET_NAME" \
   --role=roles/secretmanager.secretAccessor --quiet >/dev/null
 echo "  ${RUNTIME_SA} can read ${SECRET_NAME}"
 
-step "4/4  deploying"
+step "4/5  granting the build service account its roles"
+# New projects no longer grant the Compute Engine default service account the
+# Cloud Build role automatically, and `gcloud run deploy --source` fails with
+# PERMISSION_DENIED reading its own uploaded source. Granting it is the
+# documented fix: cloud.google.com/run/docs/configuring/services/build-service-account
+for role in roles/cloudbuild.builds.builder roles/artifactregistry.writer roles/logging.logWriter; do
+  gcloud projects add-iam-policy-binding "$PROJECT" \
+    --member="serviceAccount:${RUNTIME_SA}" --role="$role" --quiet >/dev/null
+  echo "  ${role}"
+done
+# IAM propagation is not instant; a deploy fired immediately often still fails.
+sleep 20
+
+step "5/5  deploying"
 # --max-instances=1 is a correctness constraint, not a cost tweak: the ledger is
 # a JSON file with no locking, so a second instance would silently clobber the
 # first one's writes. Swap the ledger for Postgres before scaling past one.
+#
+# --min-instances=0 lets it scale to zero, which keeps it inside the free tier.
+# The cost is that an idle instance is reclaimed and demo state goes with it —
+# on-chain positions survive, the dashboard's view of them does not.
 gcloud run deploy "$SERVICE" \
   --source . \
   --region "$REGION" \
   --platform managed \
   --allow-unauthenticated \
-  --min-instances=1 \
+  --min-instances=0 \
   --max-instances=1 \
   --memory=512Mi \
   --cpu=1 \

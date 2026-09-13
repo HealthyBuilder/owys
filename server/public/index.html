@@ -276,14 +276,17 @@
 <header>
   <div class="bar">
     <div class="wordmark"><span class="dot"></span><b>Owys</b><span class="beta">beta</span></div>
+    <!-- Primary nav is the three things a cardholder actually does. Simulate
+         and Protocol are demo instrumentation — real users never touch them,
+         so they sit de-emphasized on the right rather than competing here. -->
     <nav role="tablist">
       <button role="tab" data-tab="card" aria-selected="true">Card</button>
       <button role="tab" data-tab="portfolio" aria-selected="false">Portfolio</button>
       <button role="tab" data-tab="activity" aria-selected="false">Activity</button>
-      <button role="tab" data-tab="simulate" aria-selected="false">Simulate</button>
     </nav>
     <div class="who">
       <select id="userSel" title="Cardholder"></select>
+      <button class="ghost" role="tab" data-tab="simulate" aria-selected="false">Simulate</button>
       <button class="ghost" role="tab" data-tab="protocol" aria-selected="false">Protocol</button>
     </div>
   </div>
