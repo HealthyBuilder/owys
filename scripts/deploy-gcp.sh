@@ -18,6 +18,7 @@ set -euo pipefail
 REGION="${REGION:-us-central1}"
 SERVICE="${SERVICE:-owys}"
 SECRET_NAME="${SECRET_NAME:-owys-wallet}"
+RUN_SA_ID="${RUN_SA_ID:-owys-run}"
 # Resolve the same keypair the server resolves, or the deployed service signs
 # with a key the program does not recognise and every accrual is rejected.
 cli_keypair() {
@@ -65,22 +66,39 @@ else
   echo "  created secret $SECRET_NAME"
 fi
 
-step "3/5  granting the Cloud Run service account access"
+step "3/5  creating a least-privilege runtime identity"
 PROJECT_NUMBER="$(gcloud projects describe "$PROJECT" --format='value(projectNumber)')"
-RUNTIME_SA="${PROJECT_NUMBER}-compute@developer.gserviceaccount.com"
+BUILD_SA="${PROJECT_NUMBER}-compute@developer.gserviceaccount.com"
+RUN_SA="${RUN_SA_ID}@${PROJECT}.iam.gserviceaccount.com"
+
+# Cloud Run defaults to the Compute Engine service account, which Google grants
+# roles/editor on the project. Running with it means any code execution inside
+# the container can mint a project-Editor token from the metadata server — read
+# every secret, create VMs, spend the billing account. This service needs to
+# read one secret and write logs, so give it an identity that can do only that.
+if ! gcloud iam service-accounts describe "$RUN_SA" --quiet >/dev/null 2>&1; then
+  gcloud iam service-accounts create "$RUN_SA_ID" \
+    --display-name="Owys Cloud Run runtime" --quiet >/dev/null
+  echo "  created ${RUN_SA}"
+fi
+
+gcloud projects add-iam-policy-binding "$PROJECT" \
+  --member="serviceAccount:${RUN_SA}" --role=roles/logging.logWriter --quiet >/dev/null
 gcloud secrets add-iam-policy-binding "$SECRET_NAME" \
-  --member="serviceAccount:${RUNTIME_SA}" \
+  --member="serviceAccount:${RUN_SA}" \
   --role=roles/secretmanager.secretAccessor --quiet >/dev/null
-echo "  ${RUNTIME_SA} can read ${SECRET_NAME}"
+echo "  ${RUN_SA}: logging.logWriter + secretAccessor on ${SECRET_NAME}, nothing else"
 
 step "4/5  granting the build service account its roles"
 # New projects no longer grant the Compute Engine default service account the
 # Cloud Build role automatically, and `gcloud run deploy --source` fails with
 # PERMISSION_DENIED reading its own uploaded source. Granting it is the
 # documented fix: cloud.google.com/run/docs/configuring/services/build-service-account
+# These are build-time only, and stay on the build identity rather than the
+# identity the service actually runs as.
 for role in roles/cloudbuild.builds.builder roles/artifactregistry.writer roles/logging.logWriter; do
   gcloud projects add-iam-policy-binding "$PROJECT" \
-    --member="serviceAccount:${RUNTIME_SA}" --role="$role" --quiet >/dev/null
+    --member="serviceAccount:${BUILD_SA}" --role="$role" --quiet >/dev/null
   echo "  ${role}"
 done
 # IAM propagation is not instant; a deploy fired immediately often still fails.
@@ -99,6 +117,7 @@ gcloud run deploy "$SERVICE" \
   --region "$REGION" \
   --platform managed \
   --allow-unauthenticated \
+  --service-account "$RUN_SA" \
   --min-instances=0 \
   --max-instances=1 \
   --memory=512Mi \

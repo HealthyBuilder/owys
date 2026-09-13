@@ -26,5 +26,10 @@ ENV DATA_DIR=/tmp/owys
 ENV NODE_ENV=production
 ENV PORT=8080
 
+# Drop root. Nothing here needs it, and it removes a step from any container
+# escape. node:22-slim ships an unprivileged `node` user.
+RUN mkdir -p /tmp/owys && chown -R node:node /tmp/owys /app
+USER node
+
 EXPOSE 8080
 CMD ["pnpm", "exec", "tsx", "server/src/server.ts"]

@@ -25,11 +25,22 @@ import { resolveMerchant, type CardAuthorization } from "./merchantResolver.ts";
 import { handleAuthorization, REWARD_BPS } from "./pipeline.ts";
 import { BY_TICKER, ISSUERS, loadMints, loadMintsMeta, quote } from "./tickers.ts";
 import { MERCHANT_POOL, buildAuthorization, findFixture, randomAuthorization } from "./cardSim.ts";
+import {
+  BadInput, MAX_DEMO_USERS, requireAmountUsd, requireDescriptor, requireId,
+} from "./limits.ts";
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "../..");
 const PORT = Number(process.env.PORT ?? 4000);
 
 const app = Fastify({ logger: false });
+
+// Reject malformed input as 400 rather than letting it surface as a 500.
+app.setErrorHandler((err: unknown, _req, reply) => {
+  if (err instanceof BadInput) return reply.code(400).send({ error: err.message });
+  const message = err instanceof Error ? err.message : String(err);
+  log("error", `unhandled: ${message}`);
+  return reply.code(500).send({ error: "internal error" });
+});
 await app.register(fastifyStatic, { root: path.join(ROOT, "server/public"), prefix: "/" });
 
 // ------------------------------------------------------------------ routes --
@@ -44,9 +55,9 @@ app.post("/webhook/card-authorization", async (req, reply) => {
   const stripe = body?.data?.object ?? (body?.object === "issuing.authorization" ? body : null);
   const incoming: CardAuthorization = stripe
     ? {
-        id: stripe.id,
-        amountUsd: (stripe.pending_request?.amount ?? stripe.amount ?? 0) / 100,
-        merchantName: stripe.merchant_data?.name ?? "UNKNOWN",
+        id: requireId(stripe.id, "id", 128),
+        amountUsd: requireAmountUsd((stripe.pending_request?.amount ?? stripe.amount ?? 0) / 100),
+        merchantName: requireDescriptor(stripe.merchant_data?.name ?? "UNKNOWN"),
         mcc: Number(stripe.merchant_data?.category_code ?? 0),
         networkId: stripe.merchant_data?.network_id ?? "",
         city: stripe.merchant_data?.city,
@@ -54,11 +65,11 @@ app.post("/webhook/card-authorization", async (req, reply) => {
         last4: stripe.card?.last4,
       }
     : {
-        id: body.id,
-        amountUsd: Number(body.amountUsd),
-        merchantName: String(body.merchantName),
+        id: requireId(body.id, "id", 128),
+        amountUsd: requireAmountUsd(body.amountUsd),
+        merchantName: requireDescriptor(body.merchantName),
         mcc: Number(body.mcc ?? 0),
-        networkId: String(body.networkId ?? ""),
+        networkId: String(body.networkId ?? "").slice(0, 64),
         city: body.city,
         country: body.country,
         last4: body.last4,
@@ -72,8 +83,16 @@ app.post("/webhook/card-authorization", async (req, reply) => {
   return handleAuthorization(incoming, userId, { sync });
 });
 
-app.post("/api/users", async (req) => {
-  const label = (req.body as any)?.label ?? `Cardholder ${ledger.listUsers().length + 1}`;
+app.post("/api/users", async (req, reply) => {
+  // Each cardholder costs the treasury real devnet SOL, so this is the one
+  // endpoint an open demo has to cap.
+  if (ledger.listUsers().length >= MAX_DEMO_USERS) {
+    return reply.code(429).send({
+      error: `demo is limited to ${MAX_DEMO_USERS} cardholders — pick an existing one`,
+    });
+  }
+  const raw = (req.body as any)?.label;
+  const label = String(raw ?? `Cardholder ${ledger.listUsers().length + 1}`).slice(0, 40);
   return users.createUser(label);
 });
 
@@ -84,8 +103,8 @@ app.post("/api/topup", async (req, reply) => {
   const { userId, amountUsd } = (req.body as any) ?? {};
   const user = ledger.getUser(userId);
   if (!user) return reply.code(404).send({ error: "unknown user" });
-  const amount = Number(amountUsd ?? 1000);
-  if (!(amount > 0) || amount > 100_000) return reply.code(400).send({ error: "invalid amount" });
+  const amount = requireAmountUsd(amountUsd ?? 1000);
+  if (amount > 100_000) return reply.code(400).send({ error: "top-up capped at $100,000" });
   const availableUsd = ledger.topUp(userId, amount);
   log("info", `${user.label} topped up $${amount.toFixed(2)} — available $${availableUsd.toFixed(2)}`);
   return { availableUsd };
@@ -101,7 +120,9 @@ app.post("/api/simulate", async (req, reply) => {
   if (body.descriptor) {
     const fixture = findFixture(body.descriptor);
     if (!fixture) return reply.code(404).send({ error: `unknown fixture ${body.descriptor}` });
-    const auth = buildAuthorization(fixture, { amountUsd: body.amountUsd });
+    const auth = buildAuthorization(fixture, {
+      amountUsd: body.amountUsd === undefined ? undefined : requireAmountUsd(body.amountUsd),
+    });
     out.push(await handleAuthorization(auth, userId, { sync: body.sync !== false }));
   } else {
     const count = Math.min(Number(body.count ?? 1), 25);
@@ -126,8 +147,8 @@ app.get("/api/resolve", async (req) => {
   const q = req.query as any;
   const auth: CardAuthorization = {
     id: "probe",
-    amountUsd: Number(q.amountUsd ?? 50),
-    merchantName: String(q.descriptor ?? ""),
+    amountUsd: requireAmountUsd(q.amountUsd ?? 50),
+    merchantName: requireDescriptor(q.descriptor, "descriptor"),
     mcc: Number(q.mcc ?? 0),
     networkId: String(q.networkId ?? "probe"),
   };
